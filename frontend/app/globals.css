@@ -1,12 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Brand colors */
+  --color-aqua: #004549;
+  --color-aqua-light: #00c4ce;
+  --color-aqua-glow: rgba(0, 238, 249, 0.3);
+  
+  /* Neutrals */
+  --color-ink: #09090b;
+  --color-surface: #ffffff;
+  --color-canvas: #fafafa;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
 @layer base {
   html {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -16,90 +33,213 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+  }
+
+  ::selection {
+    background: rgba(0, 196, 206, 0.2);
+    color: var(--color-ink);
   }
 }
 
 @layer components {
-  /* Wine sidebar styling */
+  /* ========================================
+   * SIDEBAR
+   * ======================================== */
   .sidebar {
-    @apply bg-wine-900 min-h-screen w-64 flex-shrink-0;
+    @apply bg-slate-900 min-h-screen flex-shrink-0;
+    background: linear-gradient(180deg, #09090b 0%, #18181b 100%);
   }
 
-  /* Revenue badge */
-  .revenue-badge {
-    @apply inline-flex items-center px-3 py-1 text-xs font-semibold text-white bg-accent-600 rounded-full;
-  }
-
-  /* Card styling */
-  .feature-card {
-    @apply bg-white border-2 border-ink p-6 shadow-card transition-shadow hover:shadow-card-hover;
-  }
-
-  /* Button styles */
+  /* ========================================
+   * BUTTONS
+   * ======================================== */
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 font-oswald font-semibold uppercase tracking-wide text-white bg-accent-600 hover:bg-accent-700 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-600 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center px-6 py-3 font-medium text-white 
+           bg-aqua-900 hover:bg-aqua-800 rounded-xl transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-aqua-600 focus:ring-offset-2
+           shadow-sm hover:shadow-md active:scale-[0.98];
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 font-oswald font-semibold uppercase tracking-wide text-wine-900 bg-white border-2 border-wine-900 hover:bg-wine-50 transition-colors focus:outline-none focus:ring-2 focus:ring-wine-900 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center px-6 py-3 font-medium text-slate-900 
+           bg-white border border-slate-200 rounded-xl transition-all duration-200
+           hover:bg-slate-50 hover:border-slate-300
+           focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2
+           active:scale-[0.98];
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center px-4 py-2 font-medium text-wine-900 hover:bg-wine-50 transition-colors rounded;
+    @apply inline-flex items-center justify-center px-4 py-2 font-medium text-slate-700 
+           hover:bg-slate-100 rounded-xl transition-colors;
   }
 
-  /* Status badges */
+  .btn-accent {
+    @apply inline-flex items-center justify-center px-6 py-3 font-medium text-slate-900 
+           bg-accent-500 hover:bg-accent-400 rounded-xl transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-accent-400 focus:ring-offset-2
+           shadow-glow hover:shadow-glow-strong active:scale-[0.98];
+  }
+
+  /* ========================================
+   * CARDS
+   * ======================================== */
+  .feature-card {
+    @apply bg-white border border-slate-200 p-6 rounded-2xl 
+           shadow-card transition-all duration-200
+           hover:shadow-card-hover hover:border-slate-300;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-lg border border-white/20 rounded-2xl;
+  }
+
+  /* ========================================
+   * BADGES & STATUS
+   * ======================================== */
+  .revenue-badge {
+    @apply inline-flex items-center px-3 py-1 text-xs font-semibold 
+           text-aqua-900 bg-aqua-50 rounded-full border border-aqua-200;
+  }
+
   .status-discovered {
-    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 rounded-sm;
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium 
+           bg-slate-100 text-slate-700 rounded-full;
   }
 
   .status-planned {
-    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-sm;
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium 
+           bg-blue-50 text-blue-700 rounded-full;
   }
 
   .status-in-progress {
-    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-sm;
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium 
+           bg-amber-50 text-amber-700 rounded-full;
   }
 
   .status-shipped {
-    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-sm;
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium 
+           bg-emerald-50 text-emerald-700 rounded-full;
   }
 
   .status-declined {
-    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-sm;
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium 
+           bg-red-50 text-red-700 rounded-full;
   }
 
-  /* Input styling */
+  /* ========================================
+   * INPUTS
+   * ======================================== */
   .input {
-    @apply w-full px-4 py-3 border-2 border-gray-200 focus:border-wine-900 focus:outline-none transition-colors;
+    @apply w-full px-4 py-3 bg-white border border-slate-200 rounded-xl
+           focus:border-aqua-600 focus:ring-2 focus:ring-aqua-100 focus:outline-none 
+           transition-all duration-200 placeholder:text-slate-400;
   }
 
-  /* Tag styling */
+  .input-dark {
+    @apply w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white
+           focus:border-aqua-500 focus:ring-2 focus:ring-aqua-900/50 focus:outline-none 
+           transition-all duration-200 placeholder:text-slate-400;
+  }
+
+  /* ========================================
+   * TAGS
+   * ======================================== */
   .tag {
-    @apply inline-flex items-center px-2 py-0.5 text-xs font-medium bg-wine-100 text-wine-900 rounded-sm;
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium 
+           bg-slate-100 text-slate-700 rounded-full;
+  }
+
+  .tag-aqua {
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium 
+           bg-aqua-50 text-aqua-900 rounded-full border border-aqua-200;
+  }
+
+  /* ========================================
+   * HERO GRADIENT
+   * ======================================== */
+  .hero-gradient {
+    background: linear-gradient(135deg, #09090b 0%, #18181b 50%, #004549 100%);
+  }
+
+  .hero-gradient-light {
+    background: linear-gradient(135deg, #fafafa 0%, #e4e4e7 100%);
+  }
+
+  /* ========================================
+   * GLOW EFFECTS
+   * ======================================== */
+  .glow-border {
+    position: relative;
+  }
+
+  .glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(135deg, #00eef9 0%, #004549 50%, #00eef9 100%);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0.5;
+    filter: blur(4px);
+    transition: opacity 0.3s;
+  }
+
+  .glow-border:hover::before {
+    opacity: 0.8;
+  }
+
+  /* ========================================
+   * LOGO
+   * ======================================== */
+  .logo-mark {
+    @apply w-10 h-10 rounded-xl bg-aqua-900 flex items-center justify-center
+           shadow-sm;
+  }
+
+  .logo-mark-glow {
+    @apply w-10 h-10 rounded-xl bg-aqua-900 flex items-center justify-center
+           shadow-glow;
   }
 }
 
-/* Custom scrollbar */
+/* ========================================
+ * SCROLLBAR
+ * ======================================== */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+  @apply bg-slate-100;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-wine-300 rounded;
+  @apply bg-slate-300 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-wine-400;
+  @apply bg-slate-400;
 }
 
-/* Animations */
+/* Dark scrollbar for dark backgrounds */
+.dark-scrollbar::-webkit-scrollbar-track {
+  @apply bg-slate-800;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-slate-600 rounded-full;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-500;
+}
+
+/* ========================================
+ * ANIMATIONS
+ * ======================================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -108,6 +248,26 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
   }
 }
 
@@ -130,3 +290,40 @@
   opacity: 0;
 }
 
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+/* Shimmer loading effect */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #f4f4f5 25%,
+    #e4e4e7 50%,
+    #f4f4f5 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ========================================
+ * UTILITIES
+ * ======================================== */
+.text-gradient {
+  background: linear-gradient(135deg, #00eef9 0%, #00c4ce 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-dark {
+  background: linear-gradient(135deg, #09090b 0%, #27272a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Focus visible for accessibility */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2;
+}

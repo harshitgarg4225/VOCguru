@@ -2,8 +2,11 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { MessageSquare, DollarSign, ExternalLink, MoreHorizontal } from 'lucide-react'
+import { MessageSquare, DollarSign, ExternalLink, MoreHorizontal, TrendingUp } from 'lucide-react'
 import { cn, formatCurrency, getStatusColor, getStatusLabel, timeAgo } from '@/lib/utils'
+import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
 
 interface Feature {
   id: string
@@ -37,16 +40,16 @@ export function FeatureCard({ feature, index = 0, onStatusChange }: FeatureCardP
           {/* Title */}
           <Link 
             href={`/dashboard/features/${feature.id}`}
-            className="block group-hover:text-accent-600 transition-colors"
+            className="block group-hover:text-aqua-700 transition-colors"
           >
-            <h3 className="font-oswald text-xl font-semibold uppercase tracking-wide text-ink truncate">
+            <h3 className="font-display text-lg font-semibold text-slate-900 line-clamp-1">
               {feature.title}
             </h3>
           </Link>
 
           {/* Problem Summary */}
           {feature.problem_summary && (
-            <p className="mt-2 text-gray-600 text-sm line-clamp-2">
+            <p className="mt-2 text-slate-600 text-sm line-clamp-2">
               {feature.problem_summary}
             </p>
           )}
@@ -54,13 +57,33 @@ export function FeatureCard({ feature, index = 0, onStatusChange }: FeatureCardP
           {/* Tags */}
           {feature.tags && feature.tags.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {feature.tags.slice(0, 4).map((tag) => (
-                <span key={tag} className="tag">
-                  {tag}
-                </span>
+              {feature.tags.slice(0, 3).map((tag) => (
+                <Chip
+                  key={tag}
+                  label={tag}
+                  size="small"
+                  sx={{
+                    height: '24px',
+                    fontSize: '0.75rem',
+                    backgroundColor: '#f4f4f5',
+                    color: '#3f3f46',
+                    '&:hover': {
+                      backgroundColor: '#e4e4e7',
+                    },
+                  }}
+                />
               ))}
-              {feature.tags.length > 4 && (
-                <span className="tag">+{feature.tags.length - 4}</span>
+              {feature.tags.length > 3 && (
+                <Chip
+                  label={`+${feature.tags.length - 3}`}
+                  size="small"
+                  sx={{
+                    height: '24px',
+                    fontSize: '0.75rem',
+                    backgroundColor: '#f4f4f5',
+                    color: '#71717a',
+                  }}
+                />
               )}
             </div>
           )}
@@ -70,47 +93,62 @@ export function FeatureCard({ feature, index = 0, onStatusChange }: FeatureCardP
         {feature.total_arr > 0 && (
           <div className="revenue-badge flex-shrink-0">
             <DollarSign className="w-3 h-3 mr-1" />
-            {formatCurrency(feature.total_arr)} ARR
+            {formatCurrency(feature.total_arr)}
           </div>
         )}
       </div>
 
       {/* Footer */}
-      <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-        <div className="flex items-center gap-4 text-sm text-gray-500">
+      <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+        <div className="flex items-center gap-3 text-sm">
           {/* Status */}
           <span className={getStatusColor(feature.status)}>
             {getStatusLabel(feature.status)}
           </span>
 
           {/* Feedback count */}
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1 text-slate-500">
             <MessageSquare className="w-4 h-4" />
-            {feature.feedback_count} feedback
+            {feature.feedback_count}
           </span>
 
           {/* Time */}
-          <span>{timeAgo(feature.created_at)}</span>
+          <span className="text-slate-400">{timeAgo(feature.created_at)}</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          {/* Urgency indicator */}
+          {feature.urgency_score && feature.urgency_score > 7 && (
+            <Tooltip title="High urgency" arrow>
+              <div className="p-1.5 text-amber-500">
+                <TrendingUp className="w-4 h-4" />
+              </div>
+            </Tooltip>
+          )}
+
           {/* Jira link */}
           {feature.jira_issue_url && (
-            <a
-              href={feature.jira_issue_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-1.5 text-gray-400 hover:text-accent-600 transition-colors"
-              title="View in Jira"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </a>
+            <Tooltip title="View in Jira" arrow>
+              <IconButton
+                component="a"
+                href={feature.jira_issue_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="small"
+                sx={{ color: '#a1a1aa', '&:hover': { color: '#004549' } }}
+              >
+                <ExternalLink className="w-4 h-4" />
+              </IconButton>
+            </Tooltip>
           )}
 
           {/* Actions menu */}
-          <button className="p-1.5 text-gray-400 hover:text-ink transition-colors">
+          <IconButton
+            size="small"
+            sx={{ color: '#a1a1aa', '&:hover': { color: '#09090b' } }}
+          >
             <MoreHorizontal className="w-4 h-4" />
-          </button>
+          </IconButton>
         </div>
       </div>
     </motion.div>
@@ -124,20 +162,23 @@ export function FeatureCardCompact({ feature, index = 0 }: FeatureCardProps) {
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.2, delay: index * 0.03 }}
-      className="flex items-center gap-4 p-4 bg-white border-l-4 border-ink hover:border-accent-600 transition-colors"
+      className="flex items-center gap-4 p-4 bg-white border-l-4 border-aqua-900 hover:border-aqua-600 hover:bg-slate-50 transition-all"
     >
       <div className="flex-1 min-w-0">
         <Link 
           href={`/dashboard/features/${feature.id}`}
-          className="font-oswald font-medium uppercase tracking-wide text-ink hover:text-accent-600 transition-colors truncate block"
+          className="font-medium text-slate-900 hover:text-aqua-700 transition-colors truncate block"
         >
           {feature.title}
         </Link>
-        <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+        <div className="mt-1 flex items-center gap-3 text-xs text-slate-500">
           <span className={cn(getStatusColor(feature.status), 'text-xs')}>
             {getStatusLabel(feature.status)}
           </span>
-          <span>{feature.feedback_count} feedback</span>
+          <span className="flex items-center gap-1">
+            <MessageSquare className="w-3 h-3" />
+            {feature.feedback_count}
+          </span>
         </div>
       </div>
 
@@ -149,4 +190,3 @@ export function FeatureCardCompact({ feature, index = 0 }: FeatureCardProps) {
     </motion.div>
   )
 }
-

@@ -1,12 +1,11 @@
 'use client'
 
 import { forwardRef, ButtonHTMLAttributes, ReactNode } from 'react'
-import { motion } from 'framer-motion'
-import { Loader2 } from 'lucide-react'
+import CircularProgress from '@mui/material/CircularProgress'
 import { cn } from '@/lib/utils'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'accent'
   size?: 'sm' | 'md' | 'lg'
   isLoading?: boolean
   leftIcon?: ReactNode
@@ -17,7 +16,8 @@ const variants = {
   primary: 'btn-primary',
   secondary: 'btn-secondary',
   ghost: 'btn-ghost',
-  danger: 'inline-flex items-center justify-center px-6 py-3 font-oswald font-semibold uppercase tracking-wide text-white bg-red-600 hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2',
+  accent: 'btn-accent',
+  danger: 'inline-flex items-center justify-center px-6 py-3 font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2',
 }
 
 const sizes = {
@@ -39,31 +39,30 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ...props 
   }, ref) => {
     return (
-      <motion.button
+      <button
         ref={ref}
-        whileTap={{ scale: 0.98 }}
         className={cn(
           variants[variant],
           sizes[size],
           (disabled || isLoading) && 'opacity-50 cursor-not-allowed',
+          'active:scale-[0.98] transition-transform',
           className
         )}
         disabled={disabled || isLoading}
         {...props}
       >
         {isLoading ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
+          <CircularProgress size={20} color="inherit" />
         ) : (
           <>
-            {leftIcon && <span className="mr-2">{leftIcon}</span>}
+            {leftIcon && <span className="mr-2 flex items-center">{leftIcon}</span>}
             {children}
-            {rightIcon && <span className="ml-2">{rightIcon}</span>}
+            {rightIcon && <span className="ml-2 flex items-center">{rightIcon}</span>}
           </>
         )}
-      </motion.button>
+      </button>
     )
   }
 )
 
 Button.displayName = 'Button'
-

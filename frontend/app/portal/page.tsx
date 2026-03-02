@@ -7,19 +7,25 @@ import Link from 'next/link'
 import { 
   ThumbsUp, 
   AlertCircle, 
-  ChevronRight,
   Check,
-  X,
-  Mail
+  Mail,
+  Search,
+  Filter
 } from 'lucide-react'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Chip from '@mui/material/Chip'
 import { portal } from '@/lib/api'
-import { cn, getStatusColor, getStatusLabel } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 
 export default function PublicPortalPage() {
   const [selectedFeature, setSelectedFeature] = useState<any>(null)
   const [voteModalOpen, setVoteModalOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const [voteData, setVoteData] = useState({
     email: '',
     is_critical: false,
@@ -66,28 +72,44 @@ export default function PublicPortalPage() {
   }
 
   const features = data?.features || []
-  const plannedFeatures = features.filter((f: any) => f.status === 'planned')
-  const inProgressFeatures = features.filter((f: any) => f.status === 'in_progress')
-  const shippedFeatures = features.filter((f: any) => f.status === 'shipped')
+  
+  // Filter features by search
+  const filteredFeatures = features.filter((f: any) => 
+    !searchQuery || 
+    f.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    f.problem_summary?.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const plannedFeatures = filteredFeatures.filter((f: any) => f.status === 'planned')
+  const inProgressFeatures = filteredFeatures.filter((f: any) => f.status === 'in_progress')
+  const shippedFeatures = filteredFeatures.filter((f: any) => f.status === 'shipped')
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white border-b-2 border-ink">
-        <div className="max-w-5xl mx-auto px-4 py-6">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-wine-900 flex items-center justify-center">
-                <span className="font-oswald font-bold text-white text-xl">P</span>
+            <Link href="/" className="flex items-center gap-3">
+              <div className="logo-mark">
+                <span className="font-display font-bold text-white text-lg">P</span>
               </div>
-              <div>
-                <span className="font-oswald font-semibold text-ink text-xl uppercase tracking-wide">
-                  Propel
+              <div className="flex items-center gap-2">
+                <span className="font-display font-semibold text-slate-900 text-xl tracking-tight">
+                  PainSolver
                 </span>
-                <span className="text-gray-400 ml-2">Roadmap</span>
+                <Chip 
+                  label="Roadmap" 
+                  size="small"
+                  sx={{ 
+                    backgroundColor: '#e6feff',
+                    color: '#004549',
+                    fontWeight: 500,
+                  }}
+                />
               </div>
-            </div>
-            <Link href="/login" className="btn-ghost">
+            </Link>
+            <Link href="/login" className="btn-ghost text-sm">
               Sign In
             </Link>
           </div>
@@ -95,14 +117,51 @@ export default function PublicPortalPage() {
       </header>
 
       {/* Hero */}
-      <div className="bg-wine-900 py-16">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <h1 className="font-oswald text-4xl md:text-5xl font-bold text-white uppercase">
+      <div className="bg-slate-900 py-16 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-1/4 w-80 h-80 bg-aqua-900/30 rounded-full blur-3xl" />
+        </div>
+        <div className="max-w-5xl mx-auto px-4 text-center relative z-10">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-white tracking-tight">
             Product Roadmap
           </h1>
-          <p className="mt-4 text-xl text-wine-200">
-            See what we're building and vote for features you need most
+          <p className="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
+            See what we're building, vote for features you need, and get notified when they ship.
           </p>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="max-w-5xl mx-auto px-4 -mt-6 relative z-20">
+        <div className="bg-white rounded-2xl shadow-card p-4">
+          <TextField
+            fullWidth
+            placeholder="Search features..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search className="w-5 h-5 text-slate-400" />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '0.75rem',
+                backgroundColor: '#fafafa',
+                '& fieldset': {
+                  borderColor: 'transparent',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#e4e4e7',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#004549',
+                },
+              },
+            }}
+          />
         </div>
       </div>
 
@@ -110,7 +169,7 @@ export default function PublicPortalPage() {
       <div className="max-w-5xl mx-auto px-4 py-12">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="animate-spin w-8 h-8 border-4 border-wine-900 border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-4 border-aqua-900 border-t-transparent rounded-full" />
           </div>
         ) : (
           <div className="space-y-12">
@@ -118,13 +177,13 @@ export default function PublicPortalPage() {
             {inProgressFeatures.length > 0 && (
               <section>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" />
-                  <h2 className="font-oswald text-2xl font-bold uppercase">
+                  <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
+                  <h2 className="font-display text-xl font-semibold text-slate-900">
                     In Progress
                   </h2>
-                  <span className="text-gray-400">({inProgressFeatures.length})</span>
+                  <span className="text-slate-400">({inProgressFeatures.length})</span>
                 </div>
-                <div className="space-y-4">
+                <div className="grid gap-4">
                   {inProgressFeatures.map((feature: any, index: number) => (
                     <PortalFeatureCard
                       key={feature.id}
@@ -142,12 +201,12 @@ export default function PublicPortalPage() {
               <section>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-3 h-3 bg-blue-500 rounded-full" />
-                  <h2 className="font-oswald text-2xl font-bold uppercase">
+                  <h2 className="font-display text-xl font-semibold text-slate-900">
                     Planned
                   </h2>
-                  <span className="text-gray-400">({plannedFeatures.length})</span>
+                  <span className="text-slate-400">({plannedFeatures.length})</span>
                 </div>
-                <div className="space-y-4">
+                <div className="grid gap-4">
                   {plannedFeatures.map((feature: any, index: number) => (
                     <PortalFeatureCard
                       key={feature.id}
@@ -164,13 +223,13 @@ export default function PublicPortalPage() {
             {shippedFeatures.length > 0 && (
               <section>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  <h2 className="font-oswald text-2xl font-bold uppercase">
+                  <div className="w-3 h-3 bg-emerald-500 rounded-full" />
+                  <h2 className="font-display text-xl font-semibold text-slate-900">
                     Recently Shipped
                   </h2>
-                  <span className="text-gray-400">({shippedFeatures.length})</span>
+                  <span className="text-slate-400">({shippedFeatures.length})</span>
                 </div>
-                <div className="space-y-4">
+                <div className="grid gap-4">
                   {shippedFeatures.slice(0, 5).map((feature: any, index: number) => (
                     <PortalFeatureCard
                       key={feature.id}
@@ -183,14 +242,35 @@ export default function PublicPortalPage() {
               </section>
             )}
 
-            {features.length === 0 && (
-              <div className="bg-white border-2 border-ink p-12 text-center">
-                <h3 className="font-oswald text-xl font-semibold uppercase mb-2">
-                  Roadmap Coming Soon
-                </h3>
-                <p className="text-gray-600">
-                  We're working on exciting new features. Check back soon!
-                </p>
+            {filteredFeatures.length === 0 && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+                {searchQuery ? (
+                  <>
+                    <Filter className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                    <h3 className="font-display text-xl font-semibold text-slate-900 mb-2">
+                      No Results
+                    </h3>
+                    <p className="text-slate-600">
+                      No features match "{searchQuery}"
+                    </p>
+                    <Button
+                      variant="secondary"
+                      className="mt-6"
+                      onClick={() => setSearchQuery('')}
+                    >
+                      Clear Search
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-display text-xl font-semibold text-slate-900 mb-2">
+                      Roadmap Coming Soon
+                    </h3>
+                    <p className="text-slate-600">
+                      We're working on exciting new features. Check back soon!
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -211,13 +291,13 @@ export default function PublicPortalPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-8"
             >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-green-600" />
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-emerald-600" />
               </div>
-              <h3 className="font-oswald text-2xl font-semibold uppercase mb-2">
+              <h3 className="font-display text-2xl font-semibold text-slate-900 mb-2">
                 Thanks!
               </h3>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 We'll notify you when this ships.
               </p>
             </motion.div>
@@ -227,64 +307,92 @@ export default function PublicPortalPage() {
               animate={{ opacity: 1 }}
             >
               {selectedFeature && (
-                <div className="mb-6 p-4 bg-gray-50 border-l-4 border-wine-900">
-                  <h4 className="font-oswald font-semibold uppercase">
+                <div className="mb-6 p-4 bg-slate-50 border-l-4 border-aqua-900 rounded-r-xl">
+                  <h4 className="font-semibold text-slate-900">
                     {selectedFeature.title}
                   </h4>
                 </div>
               )}
 
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email for Updates
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="email"
-                      value={voteData.email}
-                      onChange={(e) => setVoteData({ ...voteData, email: e.target.value })}
-                      className="input pl-10"
-                      placeholder="you@company.com"
-                      required
+                <TextField
+                  fullWidth
+                  label="Email for Updates"
+                  type="email"
+                  value={voteData.email}
+                  onChange={(e) => setVoteData({ ...voteData, email: e.target.value })}
+                  required
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Mail className="w-5 h-5 text-slate-400" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '0.75rem',
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#004549',
+                      },
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#004549',
+                    },
+                  }}
+                />
+
+                <div 
+                  onClick={() => setVoteData({ ...voteData, is_critical: !voteData.is_critical })}
+                  className={cn(
+                    'p-4 rounded-xl border-2 cursor-pointer transition-all',
+                    voteData.is_critical 
+                      ? 'bg-amber-50 border-amber-300' 
+                      : 'bg-slate-50 border-slate-200 hover:border-slate-300'
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <Checkbox 
+                      checked={voteData.is_critical}
+                      sx={{
+                        padding: 0,
+                        color: '#d4d4d8',
+                        '&.Mui-checked': {
+                          color: '#f59e0b',
+                        },
+                      }}
                     />
+                    <div>
+                      <span className="font-medium flex items-center gap-2 text-slate-900">
+                        <AlertCircle className="w-4 h-4 text-amber-500" />
+                        This is critical for me
+                      </span>
+                      <span className="text-sm text-slate-600">
+                        Helps us prioritize urgent requests
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                <label className="flex items-center gap-3 p-4 bg-red-50 border-2 border-red-200 cursor-pointer hover:bg-red-100 transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={voteData.is_critical}
-                    onChange={(e) => setVoteData({ ...voteData, is_critical: e.target.checked })}
-                    className="w-5 h-5 text-accent-600"
-                  />
-                  <div>
-                    <span className="font-medium flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-accent-600" />
-                      This is critical for me
-                    </span>
-                    <span className="text-sm text-gray-600">
-                      Helps us prioritize urgent requests
-                    </span>
-                  </div>
-                </label>
-
-                <label className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={voteData.wants_updates}
-                    onChange={(e) => setVoteData({ ...voteData, wants_updates: e.target.checked })}
-                    className="w-5 h-5 text-wine-900"
-                  />
-                  <span className="text-sm text-gray-600">
-                    Email me when this ships
-                  </span>
-                </label>
+                <FormControlLabel
+                  control={
+                    <Checkbox 
+                      checked={voteData.wants_updates}
+                      onChange={(e) => setVoteData({ ...voteData, wants_updates: e.target.checked })}
+                      sx={{
+                        color: '#d4d4d8',
+                        '&.Mui-checked': {
+                          color: '#004549',
+                        },
+                      }}
+                    />
+                  }
+                  label={<span className="text-sm text-slate-600">Email me when this ships</span>}
+                />
               </div>
 
               {voteMutation.isError && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm">
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl">
                   {(voteMutation.error as any)?.response?.data?.error || 'Something went wrong'}
                 </div>
               )}
@@ -313,9 +421,14 @@ export default function PublicPortalPage() {
       </Modal>
 
       {/* Footer */}
-      <footer className="bg-white border-t-2 border-ink py-8">
-        <div className="max-w-5xl mx-auto px-4 text-center text-gray-600 text-sm">
-          Powered by <span className="font-oswald font-semibold">Propel</span>
+      <footer className="bg-white border-t border-slate-200 py-8">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <p className="text-slate-500 text-sm">
+            Powered by{' '}
+            <Link href="/" className="font-semibold text-aqua-900 hover:text-aqua-700">
+              PainSolver
+            </Link>
+          </p>
         </div>
       </footer>
     </div>
@@ -339,24 +452,32 @@ function PortalFeatureCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
-      className="bg-white border-2 border-ink p-6 hover:shadow-card transition-shadow"
+      className="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-card-hover hover:border-slate-300 transition-all"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <h3 className="font-oswald text-xl font-semibold uppercase tracking-wide">
+          <h3 className="font-display text-lg font-semibold text-slate-900">
             {feature.title}
           </h3>
           {feature.problem_summary && (
-            <p className="mt-2 text-gray-600">
+            <p className="mt-2 text-slate-600 text-sm leading-relaxed">
               {feature.problem_summary}
             </p>
           )}
           {feature.tags && feature.tags.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               {feature.tags.slice(0, 3).map((tag: string) => (
-                <span key={tag} className="tag">
-                  {tag}
-                </span>
+                <Chip
+                  key={tag}
+                  label={tag}
+                  size="small"
+                  sx={{
+                    height: '24px',
+                    fontSize: '0.75rem',
+                    backgroundColor: '#f4f4f5',
+                    color: '#3f3f46',
+                  }}
+                />
               ))}
             </div>
           )}
@@ -365,23 +486,23 @@ function PortalFeatureCard({
         {!isShipped && onVote ? (
           <button
             onClick={onVote}
-            className="flex flex-col items-center gap-1 p-4 border-2 border-gray-200 hover:border-accent-600 hover:bg-red-50 transition-colors group"
+            className="flex flex-col items-center gap-1 p-4 rounded-xl border-2 border-slate-200 hover:border-aqua-500 hover:bg-aqua-50 transition-all group"
           >
-            <ThumbsUp className="w-6 h-6 text-gray-400 group-hover:text-accent-600" />
-            <span className="text-sm font-medium text-gray-600 group-hover:text-accent-600">
+            <ThumbsUp className="w-5 h-5 text-slate-400 group-hover:text-aqua-700" />
+            <span className="text-sm font-semibold text-slate-600 group-hover:text-aqua-700">
               {feature.vote_count || feature.public_votes || 0}
             </span>
           </button>
         ) : isShipped ? (
-          <div className="flex items-center gap-2 text-green-600">
-            <Check className="w-5 h-5" />
-            <span className="font-medium">Shipped</span>
+          <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-full">
+            <Check className="w-4 h-4" />
+            <span className="text-sm font-medium">Shipped</span>
           </div>
         ) : null}
       </div>
 
       {feature.critical_count > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-accent-600">
+        <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2 text-sm text-amber-600">
           <AlertCircle className="w-4 h-4" />
           {feature.critical_count} people marked this as critical
         </div>
@@ -389,4 +510,3 @@ function PortalFeatureCard({
     </motion.div>
   )
 }
-

@@ -4,6 +4,7 @@ import { Fragment, ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Button } from './Button'
 
 interface ModalProps {
   isOpen: boolean
@@ -31,7 +32,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40"
           />
 
           {/* Modal */}
@@ -40,21 +41,21 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
               className={cn(
-                'w-full bg-white border-2 border-ink shadow-elevated',
+                'w-full bg-white rounded-2xl shadow-elevated overflow-hidden',
                 sizeClasses[size]
               )}
             >
               {/* Header */}
               {title && (
-                <div className="flex items-center justify-between px-6 py-4 border-b-2 border-ink">
-                  <h2 className="font-oswald text-xl font-semibold uppercase tracking-wide">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                  <h2 className="font-display text-xl font-semibold text-slate-900">
                     {title}
                   </h2>
                   <button
                     onClick={onClose}
-                    className="p-1.5 text-gray-400 hover:text-ink transition-colors"
+                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -99,30 +100,24 @@ export function ConfirmModal({
 }: ConfirmModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-      <p className="text-gray-600">{message}</p>
+      <p className="text-slate-600">{message}</p>
       
       <div className="mt-6 flex items-center justify-end gap-3">
-        <button
+        <Button
+          variant="secondary"
           onClick={onClose}
           disabled={isLoading}
-          className="btn-secondary"
         >
           {cancelText}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant={variant === 'danger' ? 'danger' : 'primary'}
           onClick={onConfirm}
-          disabled={isLoading}
-          className={cn(
-            'btn-primary',
-            variant === 'danger' && 'bg-red-600 hover:bg-red-700',
-            variant === 'warning' && 'bg-yellow-600 hover:bg-yellow-700',
-            isLoading && 'opacity-50 cursor-not-allowed'
-          )}
+          isLoading={isLoading}
         >
-          {isLoading ? 'Loading...' : confirmText}
-        </button>
+          {confirmText}
+        </Button>
       </div>
     </Modal>
   )
 }
-

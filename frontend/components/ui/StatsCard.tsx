@@ -13,22 +13,32 @@ interface StatsCardProps {
     value: number
     isPositive: boolean
   }
-  color?: 'wine' | 'accent' | 'green' | 'blue'
+  color?: 'aqua' | 'emerald' | 'amber' | 'blue' | 'slate'
   index?: number
 }
 
 const colorClasses = {
-  wine: 'bg-wine-50 text-wine-900 border-wine-200',
-  accent: 'bg-red-50 text-accent-600 border-red-200',
-  green: 'bg-green-50 text-green-700 border-green-200',
-  blue: 'bg-blue-50 text-blue-700 border-blue-200',
+  aqua: 'border-aqua-200 bg-aqua-50/50',
+  emerald: 'border-emerald-200 bg-emerald-50/50',
+  amber: 'border-amber-200 bg-amber-50/50',
+  blue: 'border-blue-200 bg-blue-50/50',
+  slate: 'border-slate-200 bg-slate-50/50',
 }
 
 const iconColorClasses = {
-  wine: 'bg-wine-900 text-white',
-  accent: 'bg-accent-600 text-white',
-  green: 'bg-green-600 text-white',
+  aqua: 'bg-aqua-900 text-white',
+  emerald: 'bg-emerald-600 text-white',
+  amber: 'bg-amber-500 text-white',
   blue: 'bg-blue-600 text-white',
+  slate: 'bg-slate-700 text-white',
+}
+
+const valueColorClasses = {
+  aqua: 'text-aqua-900',
+  emerald: 'text-emerald-700',
+  amber: 'text-amber-700',
+  blue: 'text-blue-700',
+  slate: 'text-slate-900',
 }
 
 export function StatsCard({ 
@@ -37,7 +47,7 @@ export function StatsCard({
   format = 'number', 
   icon: Icon,
   trend,
-  color = 'wine',
+  color = 'aqua',
   index = 0
 }: StatsCardProps) {
   const formattedValue = format === 'currency' 
@@ -52,36 +62,39 @@ export function StatsCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
       className={cn(
-        'p-6 border-2 bg-white',
+        'p-6 rounded-2xl border bg-white shadow-card hover:shadow-card-hover transition-shadow',
         colorClasses[color]
       )}
     >
       <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-slate-500">
             {title}
           </p>
-          <p className="mt-2 font-oswald text-3xl font-bold">
+          <p className={cn(
+            'font-display text-3xl font-bold',
+            valueColorClasses[color]
+          )}>
             {formattedValue}
           </p>
           {trend && (
             <p className={cn(
-              'mt-2 text-sm font-medium',
-              trend.isPositive ? 'text-green-600' : 'text-red-600'
+              'text-sm font-medium flex items-center gap-1',
+              trend.isPositive ? 'text-emerald-600' : 'text-red-600'
             )}>
-              {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
-              <span className="text-gray-500 font-normal"> vs last month</span>
+              <span>{trend.isPositive ? '↑' : '↓'}</span>
+              <span>{Math.abs(trend.value)}%</span>
+              <span className="text-slate-400 font-normal">vs last month</span>
             </p>
           )}
         </div>
         <div className={cn(
-          'p-3 rounded-lg',
+          'p-3 rounded-xl',
           iconColorClasses[color]
         )}>
-          <Icon className="w-6 h-6" />
+          <Icon className="w-5 h-5" />
         </div>
       </div>
     </motion.div>
   )
 }
-
